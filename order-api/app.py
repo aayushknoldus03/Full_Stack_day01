@@ -1,5 +1,6 @@
 import json
 import os
+from pathlib import Path
 import urllib.request
 from http.server import BaseHTTPRequestHandler, HTTPServer
 from uuid import uuid4
@@ -19,13 +20,12 @@ def create_order(payload):
 class Handler(BaseHTTPRequestHandler):
     def do_GET(self):
         if self.path == "/":
-            self.respond(200, {
-                "service": "order-api",
-                "endpoints": {
-                    "health": "GET /health",
-                    "create_order": "POST /orders",
-                },
-            })
+            body = Path(__file__).with_name("index.html").read_bytes()
+            self.send_response(200)
+            self.send_header("Content-Type", "text/html; charset=utf-8")
+            self.send_header("Content-Length", str(len(body)))
+            self.end_headers()
+            self.wfile.write(body)
             return
         if self.path == "/health":
             self.respond(200, {"service": "order-api", "status": "healthy"})

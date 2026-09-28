@@ -1,0 +1,257 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#f3f3ef">
+  <title>Order Desk</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      color-scheme: light;
+      --paper: #f3f3ef;
+      --ink: #20231f;
+      --muted: #72766f;
+      --line: #d8dad2;
+      --green: #c8ef67;
+      --green-dark: #34511a;
+      --blue: #dce8f0;
+      --white: #fff;
+      --red: #a34437;
+      font-family: "Manrope", "Trebuchet MS", sans-serif;
+      color: var(--ink);
+      background: var(--paper);
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      min-width: 320px;
+      min-height: 100vh;
+      margin: 0;
+      background-image: radial-gradient(#cdd0c8 0.65px, transparent 0.65px);
+      background-size: 17px 17px;
+    }
+
+    button, input { font: inherit; }
+
+    .topbar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      min-height: 72px;
+      padding: 0 clamp(20px, 5vw, 76px);
+      border-bottom: 1px solid var(--line);
+      background: rgba(243, 243, 239, 0.9);
+    }
+
+    .brand { display: flex; align-items: center; gap: 11px; font-size: 14px; font-weight: 800; }
+    .brand-mark { display: grid; width: 30px; height: 30px; place-items: center; border-radius: 50%; background: var(--ink); color: var(--green); }
+    .brand-mark svg { width: 16px; height: 16px; }
+    .top-meta { display: flex; align-items: center; gap: 9px; color: var(--muted); font-size: 12px; font-weight: 700; }
+    .status-dot { width: 8px; height: 8px; border-radius: 50%; background: #6c9c37; box-shadow: 0 0 0 3px #6c9c3722; }
+
+    main { width: min(1100px, calc(100% - 40px)); margin: 0 auto; padding: clamp(38px, 7vw, 86px) 0 64px; }
+    .eyebrow { display: flex; align-items: center; gap: 10px; margin: 0 0 18px; color: var(--muted); font-family: "DM Mono", monospace; font-size: 11px; text-transform: uppercase; }
+    .eyebrow::before { width: 22px; height: 1px; background: currentColor; content: ""; }
+    h1 { max-width: 650px; margin: 0; font-size: clamp(42px, 6vw, 76px); line-height: 0.99; letter-spacing: -2px; }
+    .intro { max-width: 440px; margin: 20px 0 0; color: var(--muted); font-size: 15px; line-height: 1.7; }
+
+    .workspace { display: grid; grid-template-columns: minmax(0, 1.08fr) minmax(290px, 0.72fr); gap: 22px; margin-top: 54px; align-items: start; }
+    .panel { border: 1px solid var(--line); border-radius: 5px; background: var(--white); }
+    .form-panel { padding: clamp(22px, 4vw, 38px); }
+    .panel-heading { display: flex; align-items: flex-start; justify-content: space-between; gap: 15px; padding-bottom: 24px; border-bottom: 1px solid #ecece7; }
+    h2 { margin: 0; font-size: 19px; letter-spacing: -0.4px; }
+    .step { color: var(--muted); font-family: "DM Mono", monospace; font-size: 11px; }
+    form { padding-top: 27px; }
+    label { display: block; margin-bottom: 9px; font-size: 12px; font-weight: 800; }
+    .field + .field { margin-top: 22px; }
+    .input-wrap { display: flex; align-items: center; height: 52px; border: 1px solid var(--line); border-radius: 3px; background: #fbfbf9; transition: border-color 140ms, box-shadow 140ms; }
+    .input-wrap:focus-within { border-color: #52643e; box-shadow: 0 0 0 3px #52643e17; }
+    .input-wrap input { width: 100%; height: 100%; border: 0; outline: 0; padding: 0 15px; background: transparent; color: var(--ink); font-size: 14px; }
+    input[type="number"] { max-width: 160px; }
+    .quantity-control { display: flex; align-items: center; gap: 0; }
+    .quantity-control button { width: 44px; height: 50px; border: 0; background: transparent; color: var(--muted); font-size: 20px; cursor: pointer; }
+    .quantity-control input { max-width: 54px; padding: 0; text-align: center; appearance: textfield; }
+    .quantity-control input::-webkit-inner-spin-button, .quantity-control input::-webkit-outer-spin-button { margin: 0; appearance: none; }
+    .submit { display: flex; width: 100%; min-height: 52px; align-items: center; justify-content: space-between; margin-top: 30px; padding: 0 17px 0 20px; border: 0; border-radius: 3px; background: var(--green); color: #1e2c13; font-size: 13px; font-weight: 800; cursor: pointer; transition: background 140ms, transform 140ms; }
+    .submit:hover { background: #b9e44e; transform: translateY(-1px); }
+    .submit:disabled { cursor: wait; opacity: 0.7; transform: none; }
+    .submit svg { width: 17px; height: 17px; }
+    .message { min-height: 21px; margin: 15px 0 0; color: var(--muted); font-size: 12px; line-height: 1.5; }
+    .message.error { color: var(--red); }
+
+    .side-column { display: grid; gap: 18px; }
+    .note-panel { position: relative; overflow: hidden; padding: 27px; background: var(--blue); }
+    .note-panel::after { position: absolute; right: -27px; bottom: -62px; width: 150px; height: 150px; border: 1px solid #667f902c; border-radius: 50%; box-shadow: 0 0 0 17px #667f9010, 0 0 0 34px #667f900a; content: ""; }
+    .note-label { margin: 0 0 27px; color: #536673; font-family: "DM Mono", monospace; font-size: 10px; text-transform: uppercase; }
+    .note-title { position: relative; z-index: 1; max-width: 210px; margin: 0; font-size: 21px; line-height: 1.3; }
+    .flow { display: flex; align-items: center; gap: 9px; margin-top: 26px; color: #536673; font-family: "DM Mono", monospace; font-size: 10px; }
+    .flow span { padding: 7px 8px; border: 1px solid #78909d60; border-radius: 2px; background: #ffffff56; }
+    .flow b { font-weight: 400; }
+    .recent-panel { padding: 24px 25px 15px; }
+    .recent-head { display: flex; align-items: center; justify-content: space-between; gap: 10px; padding-bottom: 17px; border-bottom: 1px solid #ecece7; }
+    .recent-head h2 { font-size: 15px; }
+    .recent-count { color: var(--muted); font-family: "DM Mono", monospace; font-size: 10px; }
+    .empty { padding: 23px 0 17px; color: var(--muted); font-size: 12px; line-height: 1.6; }
+    .order-list { margin: 0; padding: 0; list-style: none; }
+    .order-item { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 15px 0; border-bottom: 1px solid #ecece7; }
+    .order-item:last-child { border-bottom: 0; }
+    .order-name { overflow: hidden; font-size: 12px; font-weight: 800; text-overflow: ellipsis; white-space: nowrap; }
+    .order-id { margin-top: 4px; color: var(--muted); font-family: "DM Mono", monospace; font-size: 9px; }
+    .order-status { flex: none; color: var(--green-dark); font-family: "DM Mono", monospace; font-size: 9px; text-transform: uppercase; }
+    footer { display: flex; justify-content: space-between; gap: 15px; margin-top: 60px; padding-top: 15px; border-top: 1px solid var(--line); color: var(--muted); font-family: "DM Mono", monospace; font-size: 10px; }
+
+    @media (max-width: 760px) {
+      .workspace { grid-template-columns: 1fr; margin-top: 38px; }
+      .side-column { grid-template-columns: 1fr 1fr; align-items: stretch; }
+      .note-panel { min-height: 100%; padding: 22px; }
+      .flow { flex-wrap: wrap; }
+      footer { margin-top: 38px; }
+    }
+
+    @media (max-width: 520px) {
+      .topbar { min-height: 62px; padding: 0 20px; }
+      main { padding-top: 45px; }
+      h1 { font-size: 47px; letter-spacing: -1.7px; }
+      .side-column { grid-template-columns: 1fr; }
+      .note-panel { min-height: 190px; }
+      .flow { margin-top: 18px; }
+      footer { flex-direction: column; }
+    }
+  </style>
+</head>
+<body>
+  <header class="topbar">
+    <div class="brand">
+      <span class="brand-mark" aria-hidden="true">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 7h16M7 4v6m10-6v6M5 11h14v9H5z"/><path d="m9 15 2 2 4-4"/></svg>
+      </span>
+      <span>ORDER DESK</span>
+    </div>
+    <div class="top-meta"><span class="status-dot"></span><span>API ONLINE</span></div>
+  </header>
+
+  <main>
+    <p class="eyebrow">Order operations / 001</p>
+    <h1>Make it<br>official.</h1>
+    <p class="intro">Create an order and send it through processing. You’ll see its status as soon as the service responds.</p>
+
+    <section class="workspace" aria-label="Order workspace">
+      <div class="panel form-panel">
+        <div class="panel-heading">
+          <h2>New order</h2>
+          <span class="step">01 / 01</span>
+        </div>
+        <form id="order-form">
+          <div class="field">
+            <label for="item">Item</label>
+            <div class="input-wrap"><input id="item" name="item" type="text" placeholder="e.g. Mechanical keyboard" maxlength="120" required autocomplete="off"></div>
+          </div>
+          <div class="field">
+            <label for="quantity">Quantity</label>
+            <div class="input-wrap quantity-control">
+              <button type="button" id="decrement" aria-label="Decrease quantity">−</button>
+              <input id="quantity" name="quantity" type="number" min="1" max="999" value="1" required>
+              <button type="button" id="increment" aria-label="Increase quantity">+</button>
+            </div>
+          </div>
+          <button class="submit" id="submit-button" type="submit"><span>Submit order</span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M13 6l6 6-6 6"/></svg></button>
+          <p class="message" id="message" role="status" aria-live="polite"></p>
+        </form>
+      </div>
+
+      <aside class="side-column">
+        <section class="panel note-panel" aria-label="Order flow">
+          <p class="note-label">Under the hood</p>
+          <h2 class="note-title">One order.<br>Three services.</h2>
+          <div class="flow"><span>API</span><b>→</b><span>PROCESS</span><b>→</b><span>NOTIFY</span></div>
+        </section>
+        <section class="panel recent-panel" aria-labelledby="recent-title">
+          <div class="recent-head"><h2 id="recent-title">Recent orders</h2><span class="recent-count" id="recent-count">00</span></div>
+          <p class="empty" id="empty-state">Your submitted orders will appear here.</p>
+          <ul class="order-list" id="order-list"></ul>
+        </section>
+      </aside>
+    </section>
+
+    <footer><span>ORDER PROCESSING PLATFORM</span><span>LIVE SERVICE / 8000</span></footer>
+  </main>
+
+  <script>
+    const form = document.querySelector("#order-form");
+    const itemInput = document.querySelector("#item");
+    const quantityInput = document.querySelector("#quantity");
+    const submitButton = document.querySelector("#submit-button");
+    const message = document.querySelector("#message");
+    const orderList = document.querySelector("#order-list");
+    const emptyState = document.querySelector("#empty-state");
+    const recentCount = document.querySelector("#recent-count");
+    let orderTotal = 0;
+
+    document.querySelector("#decrement").addEventListener("click", () => {
+      quantityInput.value = Math.max(1, Number(quantityInput.value || 1) - 1);
+    });
+    document.querySelector("#increment").addEventListener("click", () => {
+      quantityInput.value = Math.min(999, Number(quantityInput.value || 1) + 1);
+    });
+
+    form.addEventListener("submit", async (event) => {
+      event.preventDefault();
+      if (!form.reportValidity()) return;
+
+      submitButton.disabled = true;
+      submitButton.querySelector("span").textContent = "Processing...";
+      message.classList.remove("error");
+      message.textContent = "Sending order through the service chain...";
+
+      try {
+        const response = await fetch("/orders", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ item: itemInput.value.trim(), quantity: Number(quantityInput.value) })
+        });
+        const result = await response.json();
+        if (!response.ok) throw new Error(result.error || "The order could not be processed.");
+
+        message.textContent = `Order ${result.order.order_id.slice(0, 8)} processed and notification queued.`;
+        addOrder(result.order);
+        form.reset();
+        quantityInput.value = "1";
+        itemInput.focus();
+      } catch (error) {
+        message.classList.add("error");
+        message.textContent = error.message || "Could not reach the order service. Try again.";
+      } finally {
+        submitButton.disabled = false;
+        submitButton.querySelector("span").textContent = "Submit order";
+      }
+    });
+
+    function addOrder(order) {
+      orderTotal += 1;
+      recentCount.textContent = String(orderTotal).padStart(2, "0");
+      emptyState.hidden = true;
+
+      const entry = document.createElement("li");
+      entry.className = "order-item";
+      const details = document.createElement("div");
+      const name = document.createElement("div");
+      name.className = "order-name";
+      name.textContent = `${order.quantity} × ${order.item}`;
+      const id = document.createElement("div");
+      id.className = "order-id";
+      id.textContent = order.order_id.slice(0, 8);
+      const status = document.createElement("span");
+      status.className = "order-status";
+      status.textContent = "Processed";
+      details.append(name, id);
+      entry.append(details, status);
+      orderList.prepend(entry);
+      while (orderList.children.length > 4) orderList.lastElementChild.remove();
+    }
+  </script>
+</body>
+</html>
